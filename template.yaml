@@ -77,7 +77,7 @@ resources:
             grep "kubeadm join" /home/cc/output.dat > ${heat_outputs_path}.join
             kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml
             wget https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/deployment.yaml -O deployment.yaml
-            sed 's/10.10.10.60/$nfs_server_ip/' deployment.yaml
+            sed 's/10.10.10.60/$nfs_server_ip/' -i deployment.yaml
             kubectl create -f deployment.yaml
             kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/bc79dd1505b0c8681ece4de4c0d86c5cd2643275/Documentation/kube-flannel.yml
 
