@@ -75,11 +75,13 @@ resources:
             chown -R cc:cc /home/cc/.kube
             # check https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network
             grep "kubeadm join" /home/cc/output.dat > ${heat_outputs_path}.join
-            kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml
-            wget https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/deployment.yaml -O deployment.yaml
-            sed 's/10.10.10.60/$nfs_server_ip/' -i deployment.yaml
-            kubectl create -f deployment.yaml
-            kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml 
+            # It seems that kubectl commands are running in error
+            # maybe I should try to create a script with proper env variables to run it?
+            su cc -c 'kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml' > /home/cc/error.log
+            su cc -c 'kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml'
+            wget https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/deployment.yaml -O /home/cc/deployment.yaml
+            sed -e '1,/---/d' -e 's/10.10.10.60/$nfs_server_ip/' -i /home/cc/deployment.yaml
+            su cc -c 'kubectl create -f /home/cc/deployment.yaml' &>> /home/cc/error.log
 
 
           params:
