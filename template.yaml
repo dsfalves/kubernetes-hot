@@ -82,6 +82,7 @@ resources:
             wget https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/deployment.yaml -O /home/cc/deployment.yaml
             sed -e '1,/---/d' -e 's/10.10.10.60/$nfs_server_ip/' -i /home/cc/deployment.yaml
             su cc -c 'kubectl create -f /home/cc/deployment.yaml' &>> /home/cc/error.log
+            su cc -c 'kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/class.yaml'
 
 
           params:
