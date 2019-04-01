@@ -74,7 +74,10 @@ resources:
             cp /etc/kubernetes/admin.conf /home/cc/.kube/config
             chown -R cc:cc /home/cc/.kube
             # check https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#pod-network
-            grep "kubeadm join" /home/cc/output.dat > ${heat_outputs_path}.join
+            grep "kubeadm join" /home/cc/output.dat > output_com
+            grep "discovery-token" /home/cc/output.dat >> output_com
+            sed -e ':x /\\$/ {N; s/\\\n//g; bx}' -i output_com
+            cat output_com >> ${heat_outputs_path}.join
             # It seems that kubectl commands are running in error
             # maybe I should try to create a script with proper env variables to run it?
             su cc -c 'kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml' > /home/cc/error.log
