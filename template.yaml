@@ -3,11 +3,6 @@ description: Kubernetes nodes deployed with Heat on Chameleon
 heat_template_version: 2015-10-15
 
 resources:
-  nfs_server_floating_ip:
-    type: OS::Nova::FloatingIP
-    properties:
-      pool: public
-
   nfs_server:
     type: OS::Nova::Server
     properties:
@@ -27,12 +22,6 @@ resources:
         systemctl enable rpcbind && systemctl start rpcbind
         systemctl enable nfs-server && systemctl start nfs-server
         touch /exports/data/a
-
-  nfs_server_ip_association:
-    type: OS::Nova::FloatingIPAssociation
-    properties:
-      floating_ip: { get_resource: nfs_server_floating_ip }
-      server_id: { get_resource: nfs_server }
 
   kubernetes_main_floating_ip:
     type: OS::Nova::FloatingIP
