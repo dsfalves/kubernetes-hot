@@ -72,9 +72,12 @@ resources:
             su cc -c 'kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/rbac.yaml' > /home/cc/error.log
             su cc -c 'kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/a70459be0084506e4ec919aa1c114638878db11b/Documentation/kube-flannel.yml'
             wget https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/deployment.yaml -O /home/cc/deployment.yaml
-            sed -e '1,/---/d' -e 's/10.10.10.60/$nfs_server_ip/' -e 's/ifs\/kubernetes/exports\/data' -i /home/cc/deployment.yaml
+            sed -e '1,/---/d' -e 's/10.10.10.60/$nfs_server_ip/' -e 's/ifs\/kubernetes/exports\/data/' -i /home/cc/deployment.yaml
             su cc -c 'kubectl create -f /home/cc/deployment.yaml' &>> /home/cc/error.log
             su cc -c 'kubectl create -f https://raw.githubusercontent.com/kubernetes-incubator/external-storage/master/nfs-client/deploy/class.yaml'
+            # This fix is required for CentOS
+            mount -o remount,rw '/sys/fs/cgroup'
+            ln -s /sys/fs/cgroup/cpu,cpuacct /sys/fs/cgroup/cpuacct,cpu
 
 
           params:
@@ -134,6 +137,9 @@ resources:
             yum install -y kubelet kubeadm --disableexcludes=kubernetes
             echo "$join" > /home/cc/join.sh
             sudo $join
+            # This fix is required for CentOS
+            mount -o remount,rw '/sys/fs/cgroup'
+            ln -s /sys/fs/cgroup/cpu,cpuacct /sys/fs/cgroup/cpuacct,cpu
           params:
             $nfs_server_ip: { get_attr: [nfs_server, first_address] }
 
